@@ -1,0 +1,5 @@
+cliTask.c:72:6:StartCliTask	40	static
+cliTask.c:180:12:cliToggleLed	24	static
+cliTask.c:190:12:cliTurnOnLed	32	static
+cliTask.c:229:12:cliTurnOffLed	32	static
+cliTask.c:268:12:cliClearScreen	24	static
