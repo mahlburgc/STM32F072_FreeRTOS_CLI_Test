@@ -23,11 +23,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "cliTask.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
-typedef StaticTask_t osStaticThreadDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -56,20 +55,20 @@ PCD_HandleTypeDef hpcd_USB_FS;
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 /* Definitions for cliTask */
 osThreadId_t cliTaskHandle;
-uint32_t cliTaskBuffer[ 512 ];
-osStaticThreadDef_t cliTaskControlBlock;
 const osThreadAttr_t cliTask_attributes = {
   .name = "cliTask",
-  .cb_mem = &cliTaskControlBlock,
-  .cb_size = sizeof(cliTaskControlBlock),
-  .stack_mem = &cliTaskBuffer[0],
-  .stack_size = sizeof(cliTaskBuffer),
-  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 300 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for cliQueue */
+osMessageQueueId_t cliQueueHandle;
+const osMessageQueueAttr_t cliQueue_attributes = {
+  .name = "cliQueue"
 };
 /* USER CODE BEGIN PV */
 
@@ -146,6 +145,10 @@ int main(void)
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of cliQueue */
+  cliQueueHandle = osMessageQueueNew (1, sizeof(CliBuffer_t), &cliQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -478,6 +481,8 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
+	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+
   /* Infinite loop */
   for(;;)
   {

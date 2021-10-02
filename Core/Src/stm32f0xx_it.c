@@ -123,11 +123,17 @@ void TIM6_DAC_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
+    if (huart1.Instance->ISR & USART_ISR_RXNE)
+	{
+		HAL_UART_RxCpltCallback(&huart1);
+//		CLEAR_BIT(huart1.Instance->ISR, USART_ISR_RXNE);
+//		SET_BIT(huart1.Instance->ICR, USART_ICR_ORECF);
+		return;
+	}
 
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
-
   /* USER CODE END USART1_IRQn 1 */
 }
 
